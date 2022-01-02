@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # FUNCTION: gets average of color on screen and sends it to raspberry pi running color_server.py for display to LEDs. color_server.py should be on the pi, while this program is on a seperate device.
-# screenshots of your main monitor are taken, compressed down to a specified value, averaged, and then sent to color_server. optionally, you can crop a set amount of pixels off of the top, bottom, left, and right of the screenshot. these calculations are done before the image is compressed.
+# screenshots of your main monitor are taken, compressed down to a specified size, averaged, and then sent to color_server. optionally, you can crop a set amount of pixels off of the top, bottom, left, and right of the screenshot. these calculations are done before the image is compressed.
 import paramiko
 import time
 from PIL import ImageGrab
@@ -18,13 +18,16 @@ HOST = '192.168.1.69'
 PORT = 65432
 
 # color recording settings
+# cropping may help image represent colors on screen better. Ex: cropping out UI elements of videogames
+verticle_res = 1440
+horizontal_res = 2560
 width_resize = 16
 height_resize = 9
-crop_x_left = 300
-crop_x_right = 300
-crop_y_top = 200
-crop_y_bottom = 200
-wait_time = 1 / 60
+crop_x_left = 500
+crop_x_right = 500
+crop_y_top = 300
+crop_y_bottom = 300
+#wait_time = 1 / 60
 
 
 # starts server using ssh
@@ -49,7 +52,7 @@ if __name__ == "__main__":
 
         try:
             while True:
-                screenshot = ImageGrab.grab().crop((crop_x_left, crop_y_top, 1920 - crop_x_right, 1080 - crop_y_bottom)).resize((width_resize, height_resize)).convert("RGB")
+                screenshot = ImageGrab.grab().crop((crop_x_left, crop_y_top, horizontal_res - crop_x_right, verticle_res - crop_y_bottom)).resize((width_resize, height_resize)).convert("RGB")
                 r_average = 0
                 g_average = 0
                 b_average = 0
