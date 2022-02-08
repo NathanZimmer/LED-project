@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 # FUNCTION: gets average of color on screen and sends it to raspberry pi running color_server.py for display to LEDs. color_server.py should be on the pi, while this program is on a seperate device.
 # screenshots of your main monitor are taken, compressed down to a specified size, averaged, and then sent to color_server. optionally, you can crop a set amount of pixels off of the top, bottom, left, and right of the screenshot. these calculations are done before the image is compressed.
 import paramiko
