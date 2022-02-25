@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # gets rgb value from client and sets lights accordingly
+from ast import Bytes
 import socket
 import logging
 import os
@@ -44,6 +45,7 @@ if __name__ == "__main__":
             s.bind((HOST, PORT))
             light_process = None
             copy_process = None
+            lights_on = True
 
             # server loop
             while True:
@@ -61,7 +63,7 @@ if __name__ == "__main__":
                             input = getMessage()
 
                             # freeing microprocess if applicable
-                            if light_process != None and (input[0] != 4):
+                            if light_process != None and input[0] != 4 and input[0] != 6 and lights_on:
                                 light_process.terminate()
                                 light_process.join()
                                 log(light_process)
@@ -84,20 +86,40 @@ if __name__ == "__main__":
 
                                 # until I get base manager working- instead of accessing the brightness of the currently running process, a copy is made, brightness is changed, and the process is restarted based on the copy. 
                                 # This is dirty, but base managers are confusing.
-                                if light_process != None:
-                                    light_process.terminate()
-                                    light_process.join()
+                                if lights_on:
+                                    if light_process != None:
+                                        light_process.terminate()
+                                        light_process.join()
 
-                                if copy_process != None:
-                                    light_process = copy.copy(copy_process)
+                                    if copy_process != None:
+                                        light_process = copy.copy(copy_process)
                                 
                                 strip.set_brightness(input[1])
                             elif input[0] == 5:
-                                log("Lights off")
-                                strip.set_color([0, 0, 0])
+                                log(f"Lights on: {not lights_on}")
+                                # if lights are on we disable the lights and set 
+                                if lights_on:
+                                    if light_process != None:
+                                        light_process.terminate()
+                                        light_process.join()
+
+                                    if copy_process != None:
+                                        light_process = copy.copy(copy_process)
+
+                                    strip.set_color([0, 0, 0])
+
+                                lights_on = not lights_on
+                            elif input[0] == 6:
+                                log("sending status to client")
+                                if lights_on:
+                                    int_val = 1
+                                    conn.send(int_val.to_bytes(2, "big"))
+                                else:
+                                    int_val = 0
+                                    conn.send(int_val.to_bytes(2, "big"))
                             
                             # starting process
-                            if light_process != None:
+                            if light_process != None and lights_on and input[0] != 6:
                                 copy_process = copy.copy(light_process)
                                 light_process.start()
 

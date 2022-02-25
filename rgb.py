@@ -33,6 +33,8 @@ class RGB:
                         time.sleep(chase_speed/1000.0)
 
                 self.strip.show()
+                if rgb == [0, 0, 0]:
+                    return
             except Exception:
                 logging.exception("")
                 return

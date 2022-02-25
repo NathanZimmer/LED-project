@@ -20,7 +20,8 @@ public class ClientNonGUI {
             out.println("3: color bands");
             out.println("4: change brightness");
             out.println("5: off");
-            out.println("6: close program");
+            out.println("6: get status");
+            out.println("7: close program");
             int choice = getInput();
 
             LinkedList<Integer> inputList = new LinkedList<>();
@@ -100,20 +101,18 @@ public class ClientNonGUI {
                 out.println("Enter brightness:");
                 inputList.add(getInput());
             }
-            // turning lights off
-            else if (choice == 5) {
-                inputList.removeLast();
-                for (int i = 0; i < 6; i ++)
-                    inputList.add(0);
-            }
             // closing program
-            else if (choice == 6) {
+            else if (choice == 7) {
                 break;
             }
             
             // sending array to server
             int[] inputArray = inputList.stream().mapToInt(Integer::intValue).toArray();
             client.SendMessage(inputArray);
+
+            if (choice == 6) {
+                out.println(client.GetMessage());
+            }
         }
         scanner.close();
     }

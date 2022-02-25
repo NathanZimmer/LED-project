@@ -4,12 +4,14 @@ import java.io.*;
 public class RGBClient {
     private static Socket clientSocket;
     private static DataOutputStream out;
+    private static DataInputStream in;
 
     // starts connection and creates output stream
     public void StartConnection(String host, int port) {
         try {
             clientSocket = new Socket(host, port);
             out = new DataOutputStream(clientSocket.getOutputStream());
+            in = new DataInputStream(clientSocket.getInputStream());
         }
         catch(ConnectException e) {
             System.out.println("Server not found or connection was refused. Make sure IP and port are correct.");
@@ -31,6 +33,17 @@ public class RGBClient {
         }
         catch(Exception e) {
             System.out.println(e);
+        }
+    }
+
+    // gets int message from server and returns -1 if something goes wrong
+    public byte GetMessage() {
+        try {
+            return in.readByte();
+        }
+        catch(Exception e) {
+            System.out.println(e);
+            return (byte)-1;
         }
     }
 
